@@ -1,46 +1,32 @@
 require('./config/config');
 
+const mongoose = require('mongoose');
 const express = require('express');
 const app = express();
-
-
 const bodyParser = require('body-parser');
+
 //parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({extended: false}))
 
 //parse application/json
 app.use(bodyParser.json())
 
-app.get('/usuario', (req, res) => {
-    res.json('get usuario');
-});
+//Rutas
+app.use(require('./routes/usuario'));
 
-app.post('/usuario', (req, res) => {
+//Conexion a la base de datos
+mongoose.connect('mongodb://localhost:27017/cafe', { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology:true }, (err, res) => {
     
-    let body = req.body;
-
-    if(body.nombre === undefined){
-        res.status(400).json({
-            ok:false,
-            mensaje: 'Nombre es necesario'
-        });
+    if(err){
+        throw err;
     }else{
-        res.json(body);
+        console.log('Base de datos conectado');
     }
 
 });
 
-app.put('/usuario/:id', (req, res) => {
-    let id = req.params.id;
-    res.json({
-        id
-    });
-});
-
-app.delete('/usuario', (req, res) => {
-    res.json('delete usuario');
-});
 
 app.listen(process.env.PORT, () => {
     console.log('Escuchando en el puerto 3000');
 });
+
